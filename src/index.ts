@@ -10,7 +10,7 @@ import bodyParser from "body-parser";
 const app = express();
 const PORT = ENV.PORT || 7000;
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5173").split(',').map(o => o.trim()).filter(Boolean);
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || "http://localhost:5173").split(',').map(o => o.trim()).filter(Boolean);
 connectDB()
 app.use(cors({
     origin: function (origin, callback) {
