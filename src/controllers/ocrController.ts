@@ -3,9 +3,32 @@ import { ERROR_MESSAGES, HTTP_STATUS, SUCCESS_MESSAGES } from "../shared/constan
 import { extractAadhaarInfo } from "../services/formatAadharData";
 import { extractTextFromImages } from "../services/textExtraction";
 import { greyscaleImage } from "../services/greyScaleImage";
-import { success } from "zod";
 import { OcrDto } from "../shared/dtos";
 import { AadharModel } from "../models/schema/aadhar_schema";
+import cloudinary from "../config/cloudinary";
+
+
+
+export const handleDeleteImage = (async(req:Request,res:Response)=>{
+    const { publicId } = req.body;
+
+  if (!publicId) {
+    return res.status(400).json({ success: false, message: "Missing publicId" });
+  }
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+
+    if (result.result !== "ok") {
+      throw new Error("Delete failed");
+    }
+    res.status(200).json({ success: true, message: "Image deleted successfully" });
+  } catch (error) {
+    console.error("Cloudinary delete error:", error);
+    res.status(500).json({ success: false, message: "Deletion failed" });
+  }
+});
+
 
 export async function  handleOcr(req:Request,res:Response){
     try{
@@ -24,6 +47,14 @@ export async function  handleOcr(req:Request,res:Response){
         const { frontText, backText } = await extractTextFromImages(frontBuffer, backBuffer);
         console.log("front textss",frontText)
         const parsedData = extractAadhaarInfo(frontText, backText);
+
+        if(!parsedData.aadhaarNumber){
+            res.status(HTTP_STATUS.BAD_REQUEST).json({
+                success: false,
+                message: ERROR_MESSAGES.INVALID_AADHAAR_NUMBER
+            })
+            return ;
+        }
 
         res.status(HTTP_STATUS.OK).json({
             success: true,

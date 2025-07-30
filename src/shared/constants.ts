@@ -34,5 +34,6 @@ export const ERROR_MESSAGES = {
     SERVICE_UNAVAILABLE: "Service is temporarily unavailable. Please try again later.",
     UNKNOWN_ERROR: "Something went wrong. Please try again.",
     MISSING_FIELDS: "Some fields are missing.",
-    ID_NOT_PROVIDED: "Id not provided."
+    ID_NOT_PROVIDED: "Id not provided.",
+    INVALID_AADHAAR_NUMBER:"Invalid data is uploaded.Please check it."
 }
